@@ -1,0 +1,286 @@
+/* variables */
+
+:root {
+	--accent: #375dfb;
+	--accentHover: #234fff;
+	--accentLight: #5073ff;
+	--back: #0d0d1b;
+	--backLight: #000a32;
+	--white: #ffffff;
+	--black: #000000;
+	--accent-gradient-start: var(--accent);
+	--accent-gradient-end: var(--accentHover);
+	--accent-alpha-10: rgba(55, 93, 251, 0.1);
+	--accent-alpha-05: rgba(55, 93, 251, 0.05);
+	--blue-alpha-20: rgb(2 15 52 / 20%);
+	--blue-alpha-10: rgb(2 15 52 / 10%);
+	--shadow-primary: rgba(55, 93, 251, 0.3);
+	--shadow-primary-hover: rgba(55, 93, 251, 0.4);
+	--shadow-secondary: rgba(55, 93, 251, 0.15);
+	--shadow-ghost: rgba(55, 93, 251, 0.1);
+	--shadow-dark: rgba(0, 0, 0, 0.1);
+	--shadow-dark-hover: rgba(0, 0, 0, 0.15);
+	--header-bg: rgba(13, 13, 27, 0.85);
+	--header-bg-scrolled: rgba(13, 13, 27, 0.95);
+	--nav-text: rgba(255, 255, 255, 0.8);
+	--nav-text-hover: var(--white);
+	--nav-text-active: var(--accent);
+	--border-subtle: rgba(255, 255, 255, 0.1);
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Montserrat", sans-serif;
+}
+
+/* base tag style */
+
+html {
+	scroll-behavior: smooth;
+	scroll-padding-top: 50px;
+}
+
+body {
+	min-height: 100vh;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	background: var(--back) url("/assets/icons/pattern.svg");
+}
+
+/* стилі для всіх секцій крім .entry */
+section:not(.entry) {
+	margin: 120px 0;
+}
+
+/* base class style */
+
+.container {
+	width: 100%;
+	max-width: 1360px;
+	padding: 0 12px;
+	margin: 0 auto;
+}
+/* Основна кнопка (Primary) */
+.cta {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 28px;
+	font-size: 16px;
+	font-weight: 600;
+	height: 48px;
+	text-align: center;
+	text-decoration: none;
+	color: var(--white);
+	background: linear-gradient(135deg, var(--accent-gradient-start) 0%, var(--accent-gradient-end) 100%);
+	border: none;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	user-select: none;
+	outline: none;
+	box-shadow:
+		0 4px 12px var(--shadow-primary),
+		0 2px 4px var(--shadow-dark);
+	overflow: hidden;
+}
+
+.cta::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, var(--blue-alpha-20), transparent);
+	transition: left 0.5s;
+}
+
+.cta:hover {
+	transform: translateY(-2px);
+	box-shadow:
+		0 8px 24px var(--shadow-primary-hover),
+		0 4px 8px var(--shadow-dark-hover);
+}
+
+.cta:hover::before {
+	left: 100%;
+}
+
+.cta:active {
+	transform: translateY(0);
+	box-shadow:
+		0 2px 8px var(--shadow-primary),
+		0 1px 2px var(--shadow-dark);
+}
+
+.cta:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;
+	transform: none;
+	box-shadow: none;
+}
+
+/* Другорядна кнопка (Secondary) */
+.cta-secondary {
+	color: var(--accentLight);
+	background: var(--accent-alpha-10);
+	border: 2px solid var(--accent);
+	box-shadow:
+		0 2px 8px var(--shadow-secondary),
+		0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.cta-secondary::before {
+	background: linear-gradient(90deg, transparent, var(--accent-alpha-10), transparent);
+}
+
+.cta-secondary:hover {
+	color: var(--white);
+	background: var(--accent);
+	border-color: var(--accentHover);
+	box-shadow:
+		0 6px 20px var(--shadow-primary),
+		0 3px 6px var(--shadow-dark);
+}
+
+.cta-secondary:active {
+	background: var(--accentHover);
+}
+
+/* Кнопка-привид (Ghost) */
+.cta-ghost {
+	color: var(--accent);
+	background: transparent;
+	border: 2px solid transparent;
+	box-shadow: none;
+	position: relative;
+}
+
+.cta-ghost::before {
+	background: linear-gradient(90deg, transparent, rgba(55, 93, 251, 0.05), transparent);
+}
+
+.cta-ghost:hover {
+	color: var(--accentHover);
+	background: rgba(55, 93, 251, 0.05);
+	box-shadow: 0 2px 8px rgba(55, 93, 251, 0.1);
+}
+
+.cta-ghost:active {
+	background: rgba(55, 93, 251, 0.1);
+}
+
+/* Кнопка з іконкою */
+.cta-with-icon {
+	padding-left: 24px;
+	padding-right: 32px;
+}
+
+.cta-with-icon::after {
+	content: "→";
+	margin-left: 8px;
+	font-size: 18px;
+	font-weight: 700;
+	transition: transform 0.3s ease;
+}
+
+.cta-with-icon:hover::after {
+	transform: translateX(4px);
+}
+
+/* Маленька кнопка */
+.cta-small {
+	height: 36px;
+	padding: 0 20px;
+	font-size: 14px;
+	border-radius: 8px;
+}
+
+/* Велика кнопка */
+.cta-large {
+	height: 56px;
+	padding: 0 36px;
+	font-size: 18px;
+	border-radius: 16px;
+}
+
+/* Адаптивність */
+@media all and (max-width: 768px) {
+	.cta {
+		height: 44px;
+		padding: 0 24px;
+		font-size: 15px;
+	}
+
+	.cta-small {
+		height: 32px;
+		padding: 0 16px;
+		font-size: 13px;
+	}
+
+	.cta-large {
+		height: 50px;
+		padding: 0 28px;
+		font-size: 16px;
+	}
+}
+
+.scrolling-container {
+	width: 100%;
+	height: 60px;
+	background-color: var(--accent);
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	position: relative;
+	margin-top: 40px;
+}
+
+.scrolling-content {
+	display: flex;
+	animation: scroll-left 60s linear infinite;
+}
+
+.scrolling-list {
+	display: flex;
+	gap: 32px;
+	white-space: nowrap;
+	margin-right: 26px;
+}
+
+.scrolling-list li {
+	font-size: 18px;
+	font-weight: bold;
+	text-transform: uppercase;
+	color: var(--back);
+	flex-shrink: 0;
+}
+
+@keyframes scroll-left {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+@media all and (max-width: 1024px) {
+	.scrolling-container {
+		height: 50px;
+	}
+
+	.scrolling-list {
+		gap: 24px;
+	}
+
+	.scrolling-list li {
+		font-size: 14px;
+	}
+}
