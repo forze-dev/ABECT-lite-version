@@ -89,6 +89,9 @@
 
 /* Tablet styles - до 1024px */
 @media (max-width: 1024px) {
+	.entry {
+		margin-top: 0;
+	}
 	.entry__wrapper {
 		display: flex;
 		flex-direction: column-reverse;
@@ -137,12 +140,12 @@
 /* Mobile styles */
 @media (max-width: 768px) {
 	.entry {
-		padding: 100px 0 80px;
+		padding: 80px 0 100px 0;
 		min-height: auto;
 	}
 
 	.entry__wrapper {
-		gap: 40px;
+		gap: 20px;
 	}
 
 	.entry h1 {
@@ -180,12 +183,18 @@
 		font-size: 15px;
 	}
 }
+
 /* Services */
-.services {
+#services {
 	background: linear-gradient(to right, var(--back), var(--backLight));
 	padding: 120px 0;
 	position: relative;
 	overflow: hidden;
+	margin: 0;
+}
+
+#services h2 {
+	font-size: 32px;
 }
 
 .services__header {
@@ -338,7 +347,11 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+	#services {
+		padding: 100px 0;
+	}
+
 	.services__title {
 		font-size: 36px;
 	}
@@ -361,13 +374,17 @@
 	}
 
 	#services h2 {
-		font-size: 2.5rem;
-		margin-bottom: 40px;
+		font-size: 28px;
+		margin-bottom: 20px;
 	}
 
 	.services__card {
 		padding: 30px;
 		min-height: 350px;
+	}
+
+	.services__header {
+		margin-bottom: 60px;
 	}
 
 	.services__card h3 {
@@ -379,10 +396,6 @@
 	.services__card {
 		padding: 25px;
 		min-height: 320px;
-	}
-
-	#services h2 {
-		font-size: 2rem;
 	}
 
 	.services__card h3 {

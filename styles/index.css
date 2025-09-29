@@ -56,13 +56,13 @@ section:not(.entry) {
 }
 
 /* base class style */
-
 .container {
 	width: 100%;
 	max-width: 1360px;
 	padding: 0 12px;
 	margin: 0 auto;
 }
+
 /* Основна кнопка (Primary) */
 .cta {
 	position: relative;
