@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Калькулятор вартості - Розрахунок проєкту</title>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+	<style>
+		/* Variables */
+		:root {
+			--accent: #375dfb;
+			--accentHover: #234fff;
+			--accentLight: #5073ff;
+			--back: #0d0d1b;
+			--backLight: #000a32;
+			--white: #ffffff;
+			--black: #000000;
+			--accent-gradient-start: var(--accent);
+			--accent-gradient-end: var(--accentHover);
+			--accent-alpha-10: rgba(55, 93, 251, 0.1);
+			--accent-alpha-05: rgba(55, 93, 251, 0.05);
+			--blue-alpha-20: rgb(2 15 52 / 20%);
+			--blue-alpha-10: rgb(2 15 52 / 10%);
+			--shadow-primary: rgba(55, 93, 251, 0.3);
+			--shadow-primary-hover: rgba(55, 93, 251, 0.4);
+			--shadow-secondary: rgba(55, 93, 251, 0.15);
+			--shadow-ghost: rgba(55, 93, 251, 0.1);
+			--shadow-dark: rgba(0, 0, 0, 0.1);
+			--shadow-dark-hover: rgba(0, 0, 0, 0.15);
+			--header-bg: rgba(13, 13, 27, 0.85);
+			--header-bg-scrolled: rgba(13, 13, 27, 0.95);
+			--nav-text: rgba(255, 255, 255, 0.8);
+			--nav-text-hover: var(--white);
+			--nav-text-active: var(--accent);
+			--border-subtle: rgba(255, 255, 255, 0.1);
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: "Montserrat", sans-serif;
+		}
+
+		html {
+			scroll-behavior: smooth;
+		}
+
+		body {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: var(--back);
+			background-image:
+				radial-gradient(circle at 20% 50%, rgba(55, 93, 251, 0.08) 0%, transparent 50%),
+				radial-gradient(circle at 80% 80%, rgba(35, 79, 255, 0.08) 0%, transparent 50%);
+			padding: 40px 20px;
+			overflow-x: hidden;
+		}
+
+		/* Container for both forms */
+		.forms-container {
+			position: relative;
+			width: 100%;
+			max-width: 900px;
+			height: 600px;
+			perspective: 1000px;
+		}
+
+		/* Toggle Switcher */
+		.form-switcher {
+			position: absolute;
+			top: -60px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 100;
+			background: rgba(13, 13, 27, 0.6);
+			backdrop-filter: blur(12px);
+			border-radius: 50px;
+			padding: 6px;
+			display: flex;
+			gap: 6px;
+			border: 1px solid var(--border-subtle);
+			box-shadow:
+				0 8px 32px rgba(0, 0, 0, 0.3),
+				0 0 0 1px rgba(55, 93, 251, 0.1);
+		}
+
+		.form-switcher button {
+			background: transparent;
+			border: none;
+			color: var(--nav-text);
+			padding: 12px 32px;
+			border-radius: 50px;
+			cursor: pointer;
+			font-size: 15px;
+			font-weight: 600;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			position: relative;
+			z-index: 1;
+		}
+
+		.form-switcher button.active {
+			background: linear-gradient(135deg, var(--accent-gradient-start) 0%, var(--accent-gradient-end) 100%);
+			color: var(--white);
+			box-shadow:
+				0 4px 16px var(--shadow-primary),
+				0 2px 4px rgba(0, 0, 0, 0.2);
+		}
+
+		.form-switcher button:hover:not(.active) {
+			color: var(--nav-text-hover);
+			background: var(--accent-alpha-05);
+		}
+
+		/* Liquid Glass Card Base */
+		.liquid-glass-card {
+			position: absolute;
+			border-radius: 32px;
+			isolation: isolate;
+			box-shadow:
+				0px 8px 32px rgba(0, 0, 0, 0.4),
+				0 0 0 1px var(--border-subtle);
+			transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		/* Tint and inner shadow layer */
+		.liquid-glass-card::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: 0;
+			border-radius: 32px;
+			box-shadow: inset 0 0 40px -10px rgba(55, 93, 251, 0.15);
+			background: linear-gradient(135deg,
+					rgba(13, 13, 27, 0.8) 0%,
+					rgba(0, 10, 50, 0.6) 100%);
+			pointer-events: none;
+		}
+
+		/* Backdrop blur and distortion layer */
+		.liquid-glass-card::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			border-radius: 32px;
+			backdrop-filter: blur(20px);
+			-webkit-backdrop-filter: blur(20px);
+			filter: url(#glass-distortion);
+			-webkit-filter: url(#glass-distortion);
+			background: rgba(13, 13, 27, 0.7);
+			border: 1px solid var(--border-subtle);
+			isolation: isolate;
+			pointer-events: none;
+		}
+
+		/* Simple Form (Contact) - Default visible */
+		.simple-form {
+			width: 450px;
+			height: 520px;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) scale(1);
+			z-index: 10;
+			opacity: 1;
+		}
+
+		.simple-form.hidden {
+			transform: translate(-120%, -50%) scale(0.85);
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		/* Complex Form (Calculator) - Initially behind and to the right */
+		.complex-form {
+			width: 520px;
+			height: 600px;
+			top: 50%;
+			right: -60px;
+			transform: translateY(-50%) scale(0.92);
+			z-index: 5;
+			opacity: 0.5;
+			pointer-events: none;
+		}
+
+		.complex-form.active {
+			right: 50%;
+			transform: translate(50%, -50%) scale(1);
+			z-index: 10;
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		/* Card Content */
+		.card-content {
+			position: relative;
+			z-index: 10;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			padding: 48px 40px;
+			color: var(--white);
+		}
+
+		.card-content h2 {
+			font-size: 28px;
+			font-weight: 700;
+			margin-bottom: 8px;
+			background: linear-gradient(135deg, var(--white) 0%, var(--accentLight) 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+
+		.card-content .subtitle {
+			font-size: 15px;
+			color: var(--nav-text);
+			margin-bottom: 32px;
+		}
+
+		/* Form Elements */
+		.form-group {
+			margin-bottom: 24px;
+		}
+
+		.form-group label {
+			display: block;
+			font-size: 14px;
+			font-weight: 500;
+			margin-bottom: 8px;
+			color: var(--nav-text-hover);
+		}
+
+		.form-group label .required {
+			color: var(--accent);
+			margin-left: 4px;
+		}
+
+		.form-input {
+			width: 100%;
+			background: rgba(13, 13, 27, 0.5);
+			border: 1px solid var(--border-subtle);
+			border-radius: 12px;
+			padding: 14px 16px;
+			color: var(--white);
+			font-size: 15px;
+			transition: all 0.3s ease;
+			backdrop-filter: blur(10px);
+		}
+
+		.form-input::placeholder {
+			color: var(--nav-text);
+		}
+
+		.form-input:focus {
+			outline: none;
+			background: rgba(13, 13, 27, 0.7);
+			border-color: var(--accent);
+			box-shadow:
+				0 0 0 3px var(--accent-alpha-10),
+				0 0 20px var(--shadow-ghost);
+		}
+
+		textarea.form-input {
+			resize: vertical;
+			min-height: 80px;
+			font-family: inherit;
+		}
+
+		/* CTA Button Styles */
+		.cta {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 28px;
+			font-size: 16px;
+			font-weight: 600;
+			height: 48px;
+			width: 100%;
+			text-align: center;
+			text-decoration: none;
+			color: var(--white);
+			background: linear-gradient(135deg, var(--accent-gradient-start) 0%, var(--accent-gradient-end) 100%);
+			border: none;
+			border-radius: 12px;
+			cursor: pointer;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			user-select: none;
+			outline: none;
+			box-shadow:
+				0 4px 12px var(--shadow-primary),
+				0 2px 4px var(--shadow-dark);
+			overflow: hidden;
+			margin-top: auto;
+		}
+
+		.cta::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, var(--blue-alpha-20), transparent);
+			transition: left 0.5s;
+		}
+
+		.cta:hover {
+			transform: translateY(-2px);
+			box-shadow:
+				0 8px 24px var(--shadow-primary-hover),
+				0 4px 8px var(--shadow-dark-hover);
+		}
+
+		.cta:hover::before {
+			left: 100%;
+		}
+
+		.cta:active {
+			transform: translateY(0);
+			box-shadow:
+				0 2px 8px var(--shadow-primary),
+				0 1px 2px var(--shadow-dark);
+		}
+
+		/* Progress Steps for Complex Form */
+		.progress-steps {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 32px;
+			gap: 12px;
+		}
+
+		.step {
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			background: rgba(13, 13, 27, 0.5);
+			border: 2px solid var(--border-subtle);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 13px;
+			font-weight: 600;
+			transition: all 0.3s ease;
+			color: var(--nav-text);
+		}
+
+		.step.active {
+			background: linear-gradient(135deg, var(--accent-gradient-start) 0%, var(--accent-gradient-end) 100%);
+			border-color: var(--accent);
+			box-shadow: 0 0 16px var(--shadow-primary);
+			color: var(--white);
+		}
+
+		.step-line {
+			width: 40px;
+			height: 2px;
+			background: var(--border-subtle);
+			transition: all 0.3s ease;
+		}
+
+		.step-line.active {
+			background: var(--accent);
+		}
+
+		/* Radio/Checkbox Options */
+		.options-grid {
+			display: grid;
+			gap: 12px;
+			margin-bottom: 24px;
+		}
+
+		.option-item {
+			background: rgba(13, 13, 27, 0.4);
+			border: 1px solid var(--border-subtle);
+			border-radius: 12px;
+			padding: 14px 16px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.option-item:hover {
+			background: rgba(13, 13, 27, 0.6);
+			border-color: var(--accent);
+			box-shadow: 0 0 16px var(--shadow-ghost);
+		}
+
+		.option-item input[type="radio"],
+		.option-item input[type="checkbox"] {
+			width: 20px;
+			height: 20px;
+			cursor: pointer;
+			accent-color: var(--accent);
+		}
+
+		.option-item label {
+			cursor: pointer;
+			margin: 0;
+			flex: 1;
+			color: var(--white);
+			font-size: 15px;
+		}
+
+		/* Overflow handling for complex form */
+		.complex-form .card-content {
+			overflow-y: auto;
+		}
+
+		.complex-form .card-content::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		.complex-form .card-content::-webkit-scrollbar-track {
+			background: rgba(13, 13, 27, 0.3);
+			border-radius: 10px;
+		}
+
+		.complex-form .card-content::-webkit-scrollbar-thumb {
+			background: var(--accent-alpha-10);
+			border-radius: 10px;
+		}
+
+		.complex-form .card-content::-webkit-scrollbar-thumb:hover {
+			background: var(--accent);
+		}
+
+		/* Form Section Visibility */
+		.form-section {
+			transition: all 0.4s ease;
+		}
+
+		.form-section.hidden {
+			display: none;
+		}
+
+		/* Emoji icons in options */
+		.option-item label::before {
+			margin-right: 4px;
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			.forms-container {
+				height: 550px;
+			}
+
+			.liquid-glass-card {
+				width: 100%;
+				max-width: 400px;
+			}
+
+			.simple-form {
+				width: 100%;
+				max-width: 400px;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			.simple-form.hidden {
+				transform: translate(-50%, -50%) scale(0.9);
+				opacity: 0;
+			}
+
+			.complex-form {
+				width: 100%;
+				max-width: 420px;
+				right: 50%;
+				transform: translate(50%, -50%) scale(0.9);
+				opacity: 0;
+			}
+
+			.complex-form.active {
+				right: 50%;
+				transform: translate(50%, -50%) scale(1);
+			}
+
+			.card-content {
+				padding: 32px 24px;
+			}
+
+			.form-switcher {
+				top: -70px;
+				width: 90%;
+				max-width: 360px;
+			}
+
+			.form-switcher button {
+				padding: 10px 20px;
+				font-size: 14px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<!-- SVG Filter for Liquid Glass Effect -->
+	<svg width="0" height="0" style="position: absolute;">
+		<defs>
+			<filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%">
+				<feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+				<feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+				<feDisplacementMap in="SourceGraphic" in2="blurred" scale="150" xChannelSelector="R" yChannelSelector="G" />
+			</filter>
+		</defs>
+	</svg>
+
+	<div class="forms-container">
+		<!-- Toggle Switcher -->
+		<div class="form-switcher">
+			<button class="active" data-form="simple">Зв'язатися</button>
+			<button data-form="complex">Розрахувати ціну</button>
+		</div>
+
+		<!-- Simple Contact Form -->
+		<div class="liquid-glass-card simple-form">
+			<div class="card-content">
+				<h2>Зв'яжіться з нами</h2>
+				<p class="subtitle">Відповімо протягом 2 годин</p>
+
+				<form id="simpleForm">
+					<div class="form-group">
+						<label>Ім'я <span class="required">*</span></label>
+						<input type="text" class="form-input" name="name" placeholder="Іван" required>
+					</div>
+
+					<div class="form-group">
+						<label>Телефон <span class="required">*</span></label>
+						<input type="tel" class="form-input" name="phone" placeholder="+38 (0__) ___-__-__" required>
+					</div>
+
+					<div class="form-group">
+						<label>Коментар</label>
+						<textarea class="form-input" name="comment"
+							placeholder="Розкажіть коротко, чим ми можемо допомогти..."></textarea>
+					</div>
+
+					<button type="submit" class="cta">
+						📩 Надіслати заявку
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- Complex Calculator Form -->
+		<div class="liquid-glass-card complex-form">
+			<div class="card-content">
+				<h2>Розрахувати вартість</h2>
+				<p class="subtitle">Заповніть форму і отримайте орієнтовну ціну</p>
+
+				<!-- Progress Steps -->
+				<div class="progress-steps">
+					<div class="step active" data-step="1">1</div>
+					<div class="step-line"></div>
+					<div class="step" data-step="2">2</div>
+					<div class="step-line"></div>
+					<div class="step" data-step="3">3</div>
+					<div class="step-line"></div>
+					<div class="step" data-step="4">4</div>
+				</div>
+
+				<form id="complexForm">
+					<!-- Step 1: Choose Service -->
+					<div class="form-section" data-section="1">
+						<div class="form-group">
+							<label>Що вас цікавить?</label>
+							<div class="options-grid">
+								<div class="option-item">
+									<input type="radio" name="service" id="web" value="web" checked>
+									<label for="web">🌐 Веб-розробка</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="service" id="design" value="design">
+									<label for="design">🎨 Дизайн</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="service" id="marketing" value="marketing">
+									<label for="marketing">📈 Просування</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="service" id="support" value="support">
+									<label for="support">🛠️ Підтримка</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="service" id="complex" value="complex">
+									<label for="complex">✨ Комплексне рішення</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Step 2: Website Type -->
+					<div class="form-section" data-section="2">
+						<div class="form-group" id="websiteTypeGroup">
+							<label>Який тип сайту?</label>
+							<div class="options-grid">
+								<div class="option-item">
+									<input type="radio" name="website-type" id="landing" value="landing">
+									<label for="landing">📄 Лендінг</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="website-type" id="corporate" value="corporate">
+									<label for="corporate">🏢 Корпоративний сайт</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="website-type" id="ecommerce" value="ecommerce">
+									<label for="ecommerce">🛒 Інтернет-магазин</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="website-type" id="webapp" value="webapp">
+									<label for="webapp">💻 Веб-додаток</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="website-type" id="custom" value="custom">
+									<label for="custom">✏️ Свій варіант</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Step 3: Project Description -->
+					<div class="form-section" data-section="3">
+						<div class="form-group">
+							<label>Розкажіть коротко про проєкт</label>
+							<textarea class="form-input" name="description" rows="4"
+								placeholder="Наприклад: потрібен інтернет-магазин для продажу одягу..."></textarea>
+						</div>
+						<div class="form-group">
+							<label>Бажані терміни запуску?</label>
+							<div class="options-grid">
+								<div class="option-item">
+									<input type="radio" name="deadline" id="asap" value="asap">
+									<label for="asap">⚡ Якомога швидше</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="deadline" id="two-weeks" value="two-weeks">
+									<label for="two-weeks">📅 До 2 тижнів</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="deadline" id="month" value="month">
+									<label for="month">📆 До місяця</label>
+								</div>
+								<div class="option-item">
+									<input type="radio" name="deadline" id="more" value="more">
+									<label for="more">🗓️ Більше місяця</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Step 4: Contact Info -->
+					<div class="form-section" data-section="4">
+						<div class="form-group">
+							<label>Ім'я <span class="required">*</span></label>
+							<input type="text" class="form-input" name="name" placeholder="Іван" required>
+						</div>
+
+						<div class="form-group">
+							<label>Телефон <span class="required">*</span></label>
+							<input type="tel" class="form-input" name="phone" placeholder="+38 (0__) ___-__-__" required>
+						</div>
+
+						<div class="form-group">
+							<label>Email</label>
+							<input type="email" class="form-input" name="email" placeholder="ivan@example.com">
+						</div>
+					</div>
+
+					<button type="submit" class="cta">
+						🚀 Отримати розрахунок
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Form Switcher Logic
+		const switcher = document.querySelectorAll('.form-switcher button');
+		const simpleForm = document.querySelector('.simple-form');
+		const complexForm = document.querySelector('.complex-form');
+
+		switcher.forEach(btn => {
+			btn.addEventListener('click', () => {
+				const formType = btn.dataset.form;
+
+				// Update active button
+				switcher.forEach(b => b.classList.remove('active'));
+				btn.classList.add('active');
+
+				// Switch forms
+				if (formType === 'simple') {
+					simpleForm.classList.remove('hidden');
+					complexForm.classList.remove('active');
+				} else {
+					simpleForm.classList.add('hidden');
+					complexForm.classList.add('active');
+				}
+			});
+		});
+
+		// Complex Form Multi-Step Logic
+		let currentStep = 1;
+		const totalSteps = 4;
+
+		const steps = document.querySelectorAll('.step');
+		const stepLines = document.querySelectorAll('.step-line');
+		const formSections = document.querySelectorAll('.form-section');
+
+		function updateStep(step) {
+			currentStep = step;
+
+			// Update progress indicators
+			steps.forEach((s, index) => {
+				if (index < step) {
+					s.classList.add('active');
+				} else {
+					s.classList.remove('active');
+				}
+			});
+
+			stepLines.forEach((line, index) => {
+				if (index < step - 1) {
+					line.classList.add('active');
+				} else {
+					line.classList.remove('active');
+				}
+			});
+
+			// Show/hide sections
+			formSections.forEach((section, index) => {
+				if (index + 1 === step) {
+					section.classList.remove('hidden');
+				} else {
+					section.classList.add('hidden');
+				}
+			});
+		}
+
+		// Service selection triggers step 2
+		const serviceRadios = document.querySelectorAll('input[name="service"]');
+		serviceRadios.forEach(radio => {
+			radio.addEventListener('change', () => {
+				setTimeout(() => updateStep(2), 300);
+			});
+		});
+
+		// Website type selection triggers step 3
+		const websiteTypeRadios = document.querySelectorAll('input[name="website-type"]');
+		websiteTypeRadios.forEach(radio => {
+			radio.addEventListener('change', () => {
+				setTimeout(() => updateStep(3), 300);
+			});
+		});
+
+		// Deadline selection triggers step 4
+		const deadlineRadios = document.querySelectorAll('input[name="deadline"]');
+		deadlineRadios.forEach(radio => {
+			radio.addEventListener('change', () => {
+				setTimeout(() => updateStep(4), 300);
+			});
+		});
+
+		// Initialize - show only first step
+		updateStep(1);
+
+		// Simple Form Submit Handler
+		document.getElementById('simpleForm').addEventListener('submit', (e) => {
+			e.preventDefault();
+			const formData = new FormData(e.target);
+			const data = Object.fromEntries(formData);
+
+			console.log('Simple Form Data:', data);
+			alert('✅ Дякуємо! Ваша заявка надіслана. Зв\'яжемося найближчим часом.');
+			e.target.reset();
+		});
+
+		// Complex Form Submit Handler
+		document.getElementById('complexForm').addEventListener('submit', (e) => {
+			e.preventDefault();
+			const formData = new FormData(e.target);
+			const data = Object.fromEntries(formData);
+
+			console.log('Complex Form Data:', data);
+			alert('✅ Дякуємо! Розрахунок надіслано. Зв\'яжемося протягом години з детальною пропозицією.');
+			e.target.reset();
+			updateStep(1);
+		});
+
+		// Click on steps to navigate (optional UX enhancement)
+		steps.forEach((step, index) => {
+			step.addEventListener('click', () => {
+				// Only allow navigation to previous steps
+				if (index + 1 <= currentStep) {
+					updateStep(index + 1);
+				}
+			});
+		});
+	</script>
+</body>
+
+</html>
